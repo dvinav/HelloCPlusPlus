@@ -1,54 +1,27 @@
-#include "resource.h"
+#include "dxwindow.h"
 #include <math.h>
-#include <renderer.h>
 #include <tchar.h>
 #include <windows.h>
 
 HWND hwnd;
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam,
-                            LPARAM lParam) {
-  if (uMsg == WM_DESTROY) {
-    PostQuitMessage(0);
-    return 0;
-  }
-  return DefWindowProc(hwnd, uMsg, wParam, lParam);
-}
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow) {
-  const LPCSTR CLASS_NAME = "MainWindow";
+  DXWindowOptions opts = {.nWidth = 1280,
+                          .nHeight = 720,
+                          .windowName = "Hello C++",
+                          .className = "MainWindow"};
+  DXWindow mainWindow(hInstance, nCmdShow, opts);
 
-  WNDCLASS wc = {};
-  wc.lpfnWndProc = WindowProc;
-  wc.hInstance = hInstance;
-  wc.lpszClassName = CLASS_NAME;
-  wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
-  RegisterClass(&wc);
-
-  hwnd = CreateWindowEx(0, CLASS_NAME, "Hello C++!", WS_OVERLAPPEDWINDOW,
-                        CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, nullptr,
-                        nullptr, hInstance, nullptr);
-
-  ShowWindow(hwnd, nCmdShow);
-
-  DXInit(&hwnd);
-
-  // Main loop
   MSG msg = {};
   float r = 0.0f;
   while (true) {
     while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
       if (msg.message == WM_QUIT)
-        goto cleanup;
+        mainWindow.Cleanup();
       TranslateMessage(&msg);
       DispatchMessage(&msg);
     }
-    RenderFrame(&hwnd);
-  }
-
-cleanup:
-  if (msg.message == WM_QUIT) {
-    cleanup();
+    mainWindow.RenderFrame();
   }
 
   return (int)msg.wParam;
