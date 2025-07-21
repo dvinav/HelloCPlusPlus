@@ -1,6 +1,6 @@
 # HelloCPlusPlus
 
-A simple test project to start learning C++ programming on Windows.
+A simple test project for experimenting with C++ programming on Windows.
 
 ## Project Overview
 
